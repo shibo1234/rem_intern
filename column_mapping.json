@@ -1,0 +1,38 @@
+{
+    "healthfirst_columns":
+    {
+      "Member ID": "Agent_ID",
+      "Member Name": "Agent_Name",
+      "Member Effective Date": "Effective_Date",
+      "Period": "Commission_Period",
+      "Amount": "Commission_Amount",
+      "Producer Name": "Company",
+      "Product": "Plan_Name"
+    },
+
+    "emblem_columns":
+    {
+      "Rep ID": "Agent_ID",
+      "Payee Name": "Company",
+      "Payment": "Commission_Amount",
+      "Rep Name": "Agent_Name",
+      "Term Date": "Commission_Period",
+      "Plan": "Plan_Name",
+      "Member ID": "Membe_ID",
+      "Cycle Year": "Cycle Year"
+    },
+
+    "centene_columns":
+    {
+      "Centene ID": "Member_ID",
+      "Member Name": "Member_Name",
+      "Pay Period": "Commission_Period",
+      "Payment Amount": "Commission_Amount",
+      "Writing Broker Name": "Agent_Name",
+      "Writing Broker NPN": "Agent_ID",
+      "Effective Date": "Effective_Date",
+      "Plan Name": "Plan_Name",
+      "Earner Name": "Company",
+      "Cycle Year": "Cycle Year"
+    }
+}

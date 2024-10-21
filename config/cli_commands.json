@@ -1,0 +1,55 @@
+{
+  "list_carriers": {
+    "help": "List all carriers"
+  },
+  "top_k_earners": {
+    "help": "Find top k earners",
+    "args": [
+      {
+        "name": "--k",
+        "type": "int",
+        "required": true,
+        "help": "Number of top earners to retrieve"
+      },
+      {
+        "name": "--period",
+        "type": "str",
+        "required": true,
+        "help": "Commission period in YYYY-MM format"
+      }
+    ]
+  },
+  "top_k_carriers": {
+    "help": "Find top k carriers",
+    "args": [
+      {
+        "name": "--k",
+        "type": "int",
+        "required": true,
+        "help": "Number of top carriers to retrieve"
+      }
+    ]
+  },
+  "top_k_plans": {
+    "help": "Find top k plans",
+    "args": [
+      {
+        "name": "--k",
+        "type": "int",
+        "required": true,
+        "help": "Number of top plans to retrieve"
+      }
+    ]
+  },
+  "sql_query": {
+    "help": "Execute a raw SQL query on the data",
+    "args": [
+      {
+        "name": "--query",
+        "type": "str",
+        "required": true,
+        "help": "SQL query to execute on the dataframe"
+      }
+    ]
+  }
+}

@@ -1,3 +1,4 @@
+import json
 import os
 import yaml
 from src.excel_reader import ExcelReader
@@ -5,6 +6,27 @@ from src.normalizer import Normalizer
 from src.data_processor import DataProcessor
 import argparse
 import pandas as pd
+
+def load_json(file_path):
+    """
+    Load a JSON file.
+    """
+    try:
+        with open(file_path, 'r') as file:
+            return json.load(file)
+    except Exception as e:
+        print(f"Error loading JSON file: {e}")
+        return None
+
+def parse_type(type_str):
+    """
+    Map string types from JSON to actual Python types.
+    """
+    if type_str == 'int':
+        return int
+    elif type_str == 'str':
+        return str
+    return str
 
 def parse_arguments():
     """
@@ -31,37 +53,17 @@ def parse_arguments():
     )
 
     subparsers = parser.add_subparsers(dest='command', help='Available commands')
-    commands = {
-        'list_carriers': {
-            'help': 'List all carriers',
-        },
-        'top_k_earners': {
-            'help': 'Find top k earners',
-            'args': [
-                {'name': '--k', 'type': int, 'required': True, 'help': 'Number of top earners to retrieve'},
-                {'name': '--period', 'type': str, 'required': True, 'help': 'Commission period in YYYY-MM format'}
-            ]
-        },
-        'top_k_carriers': {
-            'help': 'Find top k carriers',
-            'args': [
-                {'name': '--k', 'type': int, 'required': True, 'help': 'Number of top carriers to retrieve'}
-            ]
-        },
-        'top_k_plans': {
-            'help': 'Find top k plans',
-            'args': [
-                {'name': '--k', 'type': int, 'required': True, 'help': 'Number of top plans to retrieve'}
-            ]
-        }
-    }
+    commands = load_json('config/cli_commands.json')
+
+    if not commands:
+        print("Error: Failed to load commands from the JSON file.")
 
     for command, details in commands.items():
         cmd_parser = subparsers.add_parser(command, help=details['help'])
         for arg in details.get('args', []):
             cmd_parser.add_argument(
                 arg['name'],
-                type=arg['type'],
+                type=parse_type(arg['type']),
                 required=arg['required'],
                 help=arg['help']
             )
@@ -97,7 +99,7 @@ def save_to_database(df, file_path='database/normalized.csv'):
 
 def main():
     args = parse_arguments()
-    if args.command in ['list_carriers', 'top_k_earners', 'top_k_carriers', 'top_k_plans']:
+    if args.command in ['list_carriers', 'top_k_earners', 'top_k_carriers', 'top_k_plans', 'sql_query']:
         normalized_csv_path = 'database/normalized.csv'
 
         if not os.path.exists(normalized_csv_path):
@@ -125,7 +127,13 @@ def main():
             print(f"Top {args.k} plans:")
             print(result)
 
+        elif args.command == 'sql_query':
+            result = data_processor.execute_query(args.query)
+            print(f"Query result:")
+            print(result)
+
         return
+
     if args.input:
         excel_reader = ExcelReader(args.input)
         excel_reader.display_dataframe()
@@ -147,12 +155,6 @@ def main():
         save_to_database(normalized_df)
     else:
         print("Error: No input file provided. Please specify an input file using --input.")
-
-    # name = excel_reader.file_name
-    # Save the normalized DataFrame to a CSV file into csv_output folder
-    # normalized_df.to_csv(f'csv_output/{name}_normalized.csv', index=False)
-    # Save the normalized DataFrame to a CSV file into database folder
-
 
 if __name__ == "__main__":
     main()

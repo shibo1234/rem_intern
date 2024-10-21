@@ -1,0 +1,13 @@
+mappings:
+  'Agent_Name': 'Writing Broker Name'
+  'Agent_ID': 'Writing Broker NPN'
+  'Commission_Amount': 'Payment Amount'
+  'Commission_Period': 'Pay Period'
+  'Carrier_Name': 'Carrier'
+  'Enrollment_Type': 'Payment Type'
+  'Plan_Name': 'Plan Name'
+  'Member_Name': 'Member Name'
+  'Member_ID': 'Centene ID'
+  'Effective_Date': 'Effective Date'
+  'Cycle_Year': 'Cycle Year'
+  'FMO_Name': 'Earner Name'

@@ -1,0 +1,15 @@
+mappings:
+  'Earner_Name': 'Producer Name'
+  'Earner_ID':
+  'Agent_Name':
+  'Agent_ID':
+  'Commission_Amount': 'Amount'
+  'Commission_Period': 'Period'
+  'Carrier_Name': 'Carrier'
+  'Enrollment_Type': 'Enrollment Type'
+  'Plan_Name': 'Product'
+  'Member_Name': 'Member Name'
+  'Member_ID': 'Member ID'
+  'Effective_Date': 'Member Effective Date'
+  'Cycle_Year':
+  'Earner_Type': 'Producer Type'

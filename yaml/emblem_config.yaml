@@ -1,0 +1,15 @@
+mappings:
+    'Earner_Name': 'Payee Name'
+    'Earner_ID': 'Payee ID'
+    'Agent_Name': 'Rep Name'
+    'Agent_ID': 'Rep ID'
+    'Commission_Amount': 'Payment'
+    'Commission_Period': 'Term Date'
+    'Carrier_Name': 'Carrier'
+    'Enrollment_Type': 'Prior Plan'
+    'Plan_Name': 'Plan'
+    'Member_Name': ['Member First Name', 'Member Last Name']
+    'Member_ID': 'Member ID'
+    'Effective_Date': 'Effective Date'
+    'Cycle_Year': 'Cycle Year'
+    'Earner_Type':

@@ -1,4 +1,6 @@
 mappings:
+  'Earner_Name': 'Earner Name'
+  'Earner_ID': 'Earner NPN'
   'Agent_Name': 'Writing Broker Name'
   'Agent_ID': 'Writing Broker NPN'
   'Commission_Amount': 'Payment Amount'
@@ -10,4 +12,4 @@ mappings:
   'Member_ID': 'Centene ID'
   'Effective_Date': 'Effective Date'
   'Cycle_Year': 'Cycle Year'
-  'FMO_Name': 'Earner Name'
+  'Earner_Type':

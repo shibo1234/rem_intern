@@ -1,0 +1,31 @@
+fixed_schema:
+  - Earner_Name
+  - Earner_ID
+  - Agent_Name
+  - Agent_ID
+  - Commission_Amount
+  - Commission_Period
+  - Carrier_Name
+  - Enrollment_Type
+  - Plan_Name
+  - Member_Name
+  - Member_ID
+  - Effective_Date
+  - Cycle_Year
+  - Earner_Type
+
+fixed_schema_data_types:
+  Earner_Name: str
+  Earner_ID: str
+  Agent_Name: str
+  Agent_ID: str
+  Commission_Amount: float
+  Commission_Period: datetime
+  Carrier_Name: str
+  Enrollment_Type: str
+  Plan_Name: str
+  Member_Name: str
+  Member_ID: str
+  Effective_Date: datetime
+  Cycle_Year: int
+  Earner_Type: str

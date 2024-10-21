@@ -1,0 +1,5 @@
+mappings:
+  Member Name: Agent_Name
+  Member ID: Agent_ID
+  Commission Amount: Commission_Amount
+  Period: Commission_Period

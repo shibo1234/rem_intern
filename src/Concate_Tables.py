@@ -121,7 +121,21 @@ def get_top_agents_by_month(combined_df, year, month, k):
     }).reset_index()
 
     top_agents = top_agents.sort_values(by='Commission_Amount', ascending=False).head(k)
+def get_top_agents_by_month(combined_df, year, month, k):
+    filtered_data = combined_df[
+        (combined_df['Commission_Period'].dt.year == year) &
+        (combined_df['Commission_Period'].dt.month == month)
+        ]
 
+    top_agents = filtered_data.groupby('Agent_Name').agg({
+        'Commission_Amount': 'sum',
+        'Company': lambda x: ', '.join(x.unique()),
+        'Source': lambda x: ', '.join(x.unique())
+    }).reset_index()
+
+    top_agents = top_agents.sort_values(by='Commission_Amount', ascending=False).head(k)
+
+    return top_agents
     return top_agents
 
 
@@ -141,7 +155,7 @@ def write_to_csv(df, file_name, output_dir):
 
 
 if __name__ == "__main__":
-    json_path = 'column_mapping.json'
+    json_path = '../config/column_mapping.json'
     column_mappings = load_column_mappings(json_path)
     print(column_mappings)
 
@@ -162,10 +176,10 @@ if __name__ == "__main__":
 
     top_agents_june_2024 = get_top_agents_by_month(key_df, 2024, 6, 10)
 
-    output_dir = 'csv_output'
-    write_to_csv(combined_df, 'combined_commissions.csv', output_dir)
-    write_to_csv(key_df, 'key_commissions.csv', output_dir)
-    write_to_csv(top_agents_june_2024, 'top_agents_june_2024.csv', output_dir)
+    # output_dir = '../csv_output'
+    # write_to_csv(combined_df, 'combined_commissions.csv', output_dir)
+    # write_to_csv(key_df, 'key_commissions.csv', output_dir)
+    # write_to_csv(top_agents_june_2024, 'top_agents_june_2024.csv', output_dir)
 
 
 

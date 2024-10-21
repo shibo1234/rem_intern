@@ -3,7 +3,7 @@
   <component name="Black">
     <option name="sdkName" value="rem_intern" />
   </component>
-  <component name="ProjectRootManager" version="2" project-jdk-name="rem_intern" project-jdk-type="Python SDK" />
+  <component name="ProjectRootManager" version="2" project-jdk-name="/opt/homebrew/Caskroom/mambaforge/base" project-jdk-type="Python SDK" />
   <component name="PyCharmDSProjectLayout">
     <option name="id" value="JupyterRightHiddenStructureLayout" />
   </component>

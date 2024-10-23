@@ -41,3 +41,12 @@ class Command(metaclass=CommandMeta):
         """
         raise NotImplementedError("Each command must implement an execute method.")
 
+    @classmethod
+    @abstractmethod
+    def get_parameters(cls, command_args):
+        """
+        Extract and validate parameters from input args.
+        :param command_args:
+        :return:
+        """
+        raise NotImplementedError("Each command must implement a get_parameters method.")

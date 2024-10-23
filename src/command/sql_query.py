@@ -28,15 +28,23 @@ class SqlQuery(Command):
         return "Execute a SQL query on the dataframe"
 
 
-    def __init__(self, query: str):
-        self.query = query
+    @classmethod
+    def get_parameters(cls, args) -> dict:
+        """
+        Extract and validate parameters from input args.
+        This method can be extended for more complex parameter handling.
+        """
+        query = args['query']
 
-    def execute(self, dataframe):
+        return {'query': query}
+
+    def execute(self, dataframe, **kwargs):
         """
         Execute the SQL query
         :param dataframe:
         :return:
         """
-        print(f"Executing query: {self.query}")
-        print(psql.sqldf(self.query, {"df": dataframe}))
-        return psql.sqldf(self.query, {"df": dataframe})
+        query = kwargs['query']
+        print(f"Executing query: {query}")
+        print(psql.sqldf(query, {"df": dataframe}))
+        return psql.sqldf(query, {"df": dataframe})

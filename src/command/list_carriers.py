@@ -23,3 +23,7 @@ class ListAllCarriersCommand(Command):
         print(f'All carriers:')
         print(carriers)
         return carriers
+
+    @classmethod
+    def get_parameters(cls, command_args):
+        return {}

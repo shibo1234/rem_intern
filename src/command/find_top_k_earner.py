@@ -31,18 +31,29 @@ class FindTopKEarnerByCommissionPeriod(Command):
                 "first parameter is the number of earners to return, type int, "
                 "second parameter is the period of time, type str")
 
-    def __init__(self, k: int, period: str):
-        self.k = k
-        self.period = period
+    @classmethod
+    def get_parameters(cls, args) -> dict:
+        """
+        Extract and validate parameters from input args.
+        :param args:
+        :return:
+        """
+        k = args['k']
+        if k <= 0:
+            raise ValueError("k must be greater than 0.")
+        period = args['period']
+        if not period:
+            raise ValueError("period must be provided.")
+        return {'k': k, 'period': period}
 
-    def execute(self, dataframe):
+    def execute(self, dataframe, **kwargs):
         """
         Find the top k earners based on their total commission for a given period
         :param dataframe:
         :return:
         """
-        k = self.k
-        period = self.period
+        k = kwargs['k']
+        period = kwargs['period']
         dataframe['Commission_Period'] = pd.to_datetime(dataframe['Commission_Period'], errors='coerce')
         filtered_df = dataframe[dataframe['Commission_Period'].dt.strftime('%Y-%m') == period]
 

@@ -63,7 +63,6 @@ class DataProcessor:
         return carriers
 
 
-
     def find_top_k_plans(self, k):
         """
         Find the top k plans based on their total commission
@@ -96,8 +95,6 @@ if __name__ == "__main__":
     #     LIMIT 10;
     # """
     # result1 = data_processor.execute_query(query)
-    #
-
 
 
 

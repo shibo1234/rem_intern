@@ -6,6 +6,7 @@ from src.normalizer import Normalizer
 from src.data_processor import DataProcessor
 import argparse
 import pandas as pd
+from src.command import CommandMeta
 
 def load_json(file_path):
     """
@@ -20,7 +21,7 @@ def load_json(file_path):
 
 def parse_type(type_str):
     """
-    Map string types from JSON to actual Python types.
+    Map types from JSON to Python types.
     """
     if type_str == 'int':
         return int
@@ -32,43 +33,35 @@ def parse_arguments():
     """
     Parse the command-line arguments.
     """
-    parser = argparse.ArgumentParser(description='Read and process Excel Files.')
-
-    parser.add_argument(
-        '--input',
-        type=str,
-        # default='data/Healthfirst%2006.2024%20Commission.xlsx',
-        # default='data/Emblem%2006.2024%20Commission.xlsx',
-        # default='data/Centene%2006.2024%20Commission.xlsx',
-        help='Paths to the Excel files to be imported'
+    parser = argparse.ArgumentParser(description='Process commands.')
+    subparsers = parser.add_subparsers(
+        title="Available commands",
+        dest="command",
+        help="List of available commands"
     )
 
-    parser.add_argument(
-        '--config',
-        type=str,
-        # default='yaml/healthfirst_config.yaml',
-        # default='yaml/emblem_config.yaml',
-        # default='yaml/cenetene_config.yaml',
-        help='Path to the YAML configuration filee'
-    )
+    upload_parser = subparsers.add_parser('upload', help='Upload and process Excel files')
+    upload_parser.add_argument('file', type=str, help='Path to the Excel file to upload')
 
-    subparsers = parser.add_subparsers(dest='command', help='Available commands')
-    commands = load_json('config/cli_commands.json')
+    config_parser = subparsers.add_parser('config', help='Load configuration file')
+    config_parser.add_argument('config_file', type=str, help='Path to the YAML configuration file')
 
-    if not commands:
-        print("Error: Failed to load commands from the JSON file.")
+    for cmd in CommandMeta.get_commands().values():
+        cmd_parser = subparsers.add_parser(cmd.get_name(), help=cmd.get_help_info())
+        if args := cmd.get_args():
+            for arg in args:
+                cmd_parser.add_argument(f'--{arg["name"]}', type=parse_type(arg["type"]), help=cmd.get_help_info())
 
-    for command, details in commands.items():
-        cmd_parser = subparsers.add_parser(command, help=details['help'])
-        for arg in details.get('args', []):
-            cmd_parser.add_argument(
-                arg['name'],
-                type=parse_type(arg['type']),
-                required=arg['required'],
-                help=arg['help']
-            )
 
-    return parser.parse_args()
+    parsed_args = parser.parse_args()
+    return parsed_args
+
+    # default='yaml/healthfirst_config.yaml',
+    # default='yaml/emblem_config.yaml',
+    # default='yaml/cenetene_config.yaml',
+    # default='data/Healthfirst%2006.2024%20Commission.xlsx',
+    # default='data/Emblem%2006.2024%20Commission.xlsx',
+    # default='data/Centene%2006.2024%20Commission.xlsx',
 
 def load_config(config_path):
     """
@@ -99,62 +92,79 @@ def save_to_database(df, file_path='database/normalized.csv'):
 
 def main():
     args = parse_arguments()
-    if args.command in ['list_carriers', 'top_k_earners', 'top_k_carriers', 'top_k_plans', 'sql_query']:
-        normalized_csv_path = 'database/normalized.csv'
+    command_name = args.command
 
-        if not os.path.exists(normalized_csv_path):
-            print(f"Error: The normalized CSV at '{normalized_csv_path}' does not exist. Please process an input file first.")
-            return
+    normalized_csv_path = 'database/normalized.csv'
 
-        df = pd.read_csv(normalized_csv_path)
-        data_processor = DataProcessor(df)
-
-        if args.command == 'list_carriers':
-            data_processor.list_all_carriers()
-
-        elif args.command == 'top_k_earners':
-            result = data_processor.find_top_k_earners_over_all_carriers(args.k, args.period)
-            print(f"Top {args.k} earners for {args.period}:")
-            print(result)
-
-        elif args.command == 'top_k_carriers':
-            result = data_processor.find_top_k_carriers(args.k)
-            print(f"Top {args.k} carriers:")
-            print(result)
-
-        elif args.command == 'top_k_plans':
-            result = data_processor.find_top_k_plans(args.k)
-            print(f"Top {args.k} plans:")
-            print(result)
-
-        elif args.command == 'sql_query':
-            result = data_processor.execute_query(args.query)
-            print(f"Query result:")
-            print(result)
-
+    if not os.path.exists(normalized_csv_path):
+        print(f"Error: The normalized CSV at '{normalized_csv_path}' does not exist. Please process an input file first.")
         return
 
-    if args.input:
-        excel_reader = ExcelReader(args.input)
-        excel_reader.display_dataframe()
+    normalized_dataframe = pd.read_csv(normalized_csv_path)
+    command_mapping = {cls.get_name(): cls for cls in CommandMeta.get_commands().values()}
+    command_cls = command_mapping.get(command_name)
 
-        df = excel_reader.dataframe
-        normalizer = Normalizer(df)
-
-        # If the user provides METADATA
-        if args.config:
-            config = load_config(args.config)
-            if config:
-                normalized_df = normalizer.normalize_dataframe(config)
-            else:
-                print("Invalid or missing config, switching to interactive mode.")
-                normalized_df = normalizer.normalize_dataframe()
+    if command_cls:
+        if command_cls.get_args():
+            command_args = {arg["name"]: getattr(args, arg["name"]) for arg in command_cls.get_args()}
+            command_instance = command_cls(**command_args)
         else:
-            normalized_df = normalizer.normalize_dataframe()
+            command_instance = command_cls()
 
-        save_to_database(normalized_df)
+        command_instance.execute(normalized_dataframe)
     else:
-        print("Error: No input file provided. Please specify an input file using --input.")
+        print("Command not found. Use --help for available commands.")
+
+    # -----------------------------------
+    # command_registry = register_commands()
+    # args = parse_arguments()
+    # if args.upload:
+    #     excel_reader = ExcelReader(args.upload)
+    #     excel_reader.display_dataframe()
+    #     df = excel_reader.dataframe
+    #     normalizer = Normalizer(df)
+    #     # If the user provides METADATA
+    #     if args.config:
+    #         config = load_config(args.config)
+    #         if config:
+    #             normalized_df = normalizer.normalize_dataframe(config)
+    #         else:
+    #             print("Invalid or missing config, switching to interactive mode.")
+    #             normalized_df = normalizer.normalize_dataframe()
+    #     else:
+    #         normalized_df = normalizer.normalize_dataframe()
+    #     save_to_database(normalized_df)
+    # # else:
+    # #     print("Error: No input file provided. Please specify an input file using --input.")
+    #
+    #
+    # normalized_csv_path = 'database/normalized.csv'
+    #
+    # if not os.path.exists(normalized_csv_path):
+    #     print(f"Error: The normalized CSV at '{normalized_csv_path}' does not exist. Please process an input file first.")
+    #     return
+    #
+    # normalized_dataframe = pd.read_csv(normalized_csv_path)
+    # for command_cls in CommandMeta.get_commands().values():
+    #     if getattr(args, command_cls.get_name()):
+    #
+    #         if command_cls.get_args():
+    #             command_args = getattr(args, command_cls.get_name())
+    #             command_instance = command_cls(*command_args)
+    #             command_instance.execute(normalized_dataframe)
+    #             # command_args = []
+    #             # for subcommand in command_info['subcommand_name']:
+    #             #     subcommand_value = getattr(args, subcommand['name'])
+    #             #     if subcommand_value:
+    #             #         command_args.append(subcommand_value)
+    #             # command_instance.execute(*command_args)
+    #         else:
+    #             command_cls().execute(normalized_dataframe)
+    #             break
+    #
+    # else:
+    #     print("No command provided. Use --help for more information.")
+
 
 if __name__ == "__main__":
     main()

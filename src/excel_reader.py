@@ -23,6 +23,7 @@ class ExcelReader:
             print(f"Error while reading the file '{self.file_name}'")
             print(e)
             return None
+
     def display_dataframe(self):
         """
         Display the dataframes

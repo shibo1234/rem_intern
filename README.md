@@ -1,3 +1,12 @@
+# TODO
+- Export command: save databse to CSV file to 制定的地址
+- cli interface: 
+
+
+# Using Guid
+- 
+
+
 # Goal of this project
 - Build a data pipeline that do ETL process, extract, transform, load
 
@@ -37,6 +46,7 @@
 
 # Explanation of each folder
 - data: store the input data
+- database: This is the FINAL OUTPUT
 - src: acts as backend of the application, contains all the logic to process the data
 - config: settings for the application
 - yaml_config: store the metadata of the data schema uploaded by customer
@@ -48,5 +58,4 @@
   - CLI sql command 
 - Mid-level api 
   - CLI command customize sql query
-- High-level api
-    - CLI command to upload data and metadata
+

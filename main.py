@@ -5,6 +5,7 @@ from src.normalizer import Normalizer
 import argparse
 import pandas as pd
 from src.command import CommandMeta
+import sqlite3
 
 def parse_type(type_str):
     """
@@ -72,8 +73,7 @@ def validate_primary_key(df, primary_key):
     print("Primary Key validation passed.")
 
 
-
-def save_to_database(df, file_path='database/normalized.csv'):
+def save_to_database(df, file_path='database/normalized.csv', sqlite_db_path='database/normalized.db'):
     if 'Primary_Key' not in df.columns:
         raise ValueError("Merged 'Primary_Key' column not found in the dataframe.")
 
@@ -89,7 +89,11 @@ def save_to_database(df, file_path='database/normalized.csv'):
     combined_df.to_csv(file_path, mode='w', header=True, index=False)
     print(f"Data saved to {file_path}")
 
+    conn = sqlite3.connect(sqlite_db_path)
+    df.to_sql('normalized_data', conn, if_exists='replace', index=False)
+    print(f"Data saved to {sqlite_db_path} SQLite database")
 
+    conn.close()
 
 def main():
     args = parse_arguments()

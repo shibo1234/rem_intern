@@ -59,3 +59,11 @@
 - Mid-level api 
   - CLI command customize sql query
 
+# Screenshot
+![img.png](img.png)
+![img_1.png](img_1.png)
+
+
+# Something Important
+- If the user specifies a primary key in the metadata: Use it.
+- If no primary key is specified: Automatically generate a composite primary key from all the mapped columns in the fixed schema.

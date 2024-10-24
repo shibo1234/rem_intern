@@ -2,8 +2,6 @@ import logging
 import pandas as pd
 import yaml
 
-
-
 class Normalizer:
     def __init__(self, df):
         self.df = df
@@ -62,7 +60,6 @@ class Normalizer:
                     logging.error(f"Failed to convert column '{column}' to datetime: {e}")
         return self.df
 
-
     def align_data_types(self,df):
         """
         Align data types to a consistent format.
@@ -88,15 +85,17 @@ class Normalizer:
         """
         self.df = self.convert_to_datetime()
         if config:
-            self.df = self.apply_config(config)
+            self.df, primary_key_mapped = self.apply_config(config)
         else:
-            self.df = self.interactive_mapping()
+            raise ValueError("No configuration provided.")
 
         if self.df['Earner_Type'].isna().all():
             self.df = self.match_earner_type(self.df)
 
-        return self.align_data_types(self.df)
+        self.align_data_types(self.df)
+        self.df.drop_duplicates()
 
+        return self.df, primary_key_mapped
     def merge_columns(self, columns, new_column_name):
         """
         Merge multiple columns into a single column.
@@ -104,19 +103,26 @@ class Normalizer:
         :param new_column_name:
         :return:
         """
-        for column in columns:
-            if not pd.api.types.is_string_dtype(self.df[column]):
-                raise TypeError(f"Column '{column}' is not a string. Only string columns can be merged.")
+        try:
+            self.df[new_column_name] = self.df[columns].astype(str).agg(' '.join, axis=1).str.strip()
+            logging.info(f"Columns {columns} merged into '{new_column_name}'.")
+        except Exception as e:
+            logging.error(f"Error merging columns {columns}: {e}")
+            raise
 
-        self.df[new_column_name] = self.df[columns].astype(str).agg(' '.join, axis=1).str.strip()
-        logging.info(f"Columns {columns} merged into '{new_column_name}'.")
         return self.df
+        # for column in columns:
+        #     if not pd.api.types.is_string_dtype(self.df[column]):
+        #         raise TypeError(f"Column '{column}' is not a string. Only string columns can be merged.")
+        #
+        # self.df[new_column_name] = self.df[columns].astype(str).agg(' '.join, axis=1).str.strip()
+        # logging.info(f"Columns {columns} merged into '{new_column_name}'.")
+        # return self.df
 
     def apply_config(self, config):
-        """
-        Apply metadata configuration to the dataframe.
-        """
         fixed_schema = self.config['fixed_schema']
+        primary_key = config.get('Primary_Key')
+
         for fixed_attr in fixed_schema:
             if fixed_attr in config['mappings']:
                 mapped_columns = config['mappings'][fixed_attr]
@@ -130,16 +136,29 @@ class Normalizer:
                     else:
                         logging.warning(f"Column '{mapped_columns}' not found in the data. Setting '{fixed_attr}' to NaN.")
                         self.df[fixed_attr] = pd.NA
-                    # self.df.rename(columns={mapped_columns: fixed_attr}, inplace=True)
-                    # print(f"Mapped '{mapped_columns}' to '{fixed_attr}'.")
-
-            # if fixed_attr not in self.df.columns:
-            #     self.df[fixed_attr] = pd.NA
 
 
-        filtered_df = self.df[fixed_schema]
-        return filtered_df
+        self.df['Earner_Type'] = pd.NA
+        print("Added 'Earner_Type' column with NaN values.")
 
+
+        print("before debug----------------", primary_key)
+        if not primary_key:
+            # print("debug----------------")
+            # print(self.df.columns)
+            primary_key = [fixed_attr for fixed_attr in fixed_schema if fixed_attr in self.df.columns and fixed_attr != 'Primary_Key']
+            print("after debug----------------", primary_key)
+            self.df['Primary_Key'] = self.df[primary_key].astype(str).agg(' '.join, axis=1).str.strip()
+            print(f"Created 'Primary_Key' from {primary_key}.")
+        else:
+            raise ValueError("No primary key found or mapped.")
+
+        filtered_df = self.df[[col for col in fixed_schema if col in self.df.columns or col == 'Primary_Key']]
+        return filtered_df, primary_key
+
+
+    # delete this function temporarily
+    # need to decouple normalizer class and re-add this function
     def interactive_mapping(self):
         """
         Allow the user to map columns manually via CLI in the absence of a YAML config.

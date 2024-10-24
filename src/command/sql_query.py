@@ -35,7 +35,6 @@ class SqlQuery(Command):
         This method can be extended for more complex parameter handling.
         """
         query = args['query']
-
         return {'query': query}
 
     def execute(self, dataframe, **kwargs):

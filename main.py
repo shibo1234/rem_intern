@@ -35,7 +35,9 @@ def parse_arguments():
         cmd_parser = subparsers.add_parser(cmd.get_name(), help=cmd.get_help_info())
         if args := cmd.get_args():
             for arg in args:
-                cmd_parser.add_argument(f'--{arg["name"]}', type=parse_type(arg["type"]), help=cmd.get_help_info())
+                cmd_parser.add_argument(f'--{arg["name"]}',
+                                        type=parse_type(arg["type"]),
+                                        help=cmd.get_help_info())
 
 
     parsed_args = parser.parse_args()
@@ -59,21 +61,35 @@ def load_config(config_path):
     except Exception as e:
         print(f"Error loading config: {e}")
         return None
+def validate_primary_key(df, primary_key):
+    if not primary_key:
+        raise ValueError("No valid Primary Key found or generated.")
+
+    missing_keys = [key for key in primary_key if key not in df.columns]
+    if missing_keys:
+        raise ValueError(f"Primary Key column(s) not found in the dataframe: {missing_keys}")
+
+    print("Primary Key validation passed.")
+
+
 
 def save_to_database(df, file_path='database/normalized.csv'):
-    """
-    This is to simulate database by saving csv file
-    Write dataframe into existing csv
-    :param df:
-    :param file_path:
-    :return:
-    """
-    if os.path.exists(file_path):
-        df.to_csv(file_path, mode='a', header=False, index=False)
-    else:
-        df.to_csv(file_path, mode='w', header=True, index=False)
+    if 'Primary_Key' not in df.columns:
+        raise ValueError("Merged 'Primary_Key' column not found in the dataframe.")
 
+    if os.path.exists(file_path):
+        existing_df = pd.read_csv(file_path)
+        if 'Primary_Key' not in existing_df.columns:
+            raise ValueError("Primary_Key not found in existing database.")
+
+        combined_df = pd.concat([existing_df, df]).drop_duplicates(subset='Primary_Key', keep='last')
+    else:
+        combined_df = df
+
+    combined_df.to_csv(file_path, mode='w', header=True, index=False)
     print(f"Data saved to {file_path}")
+
+
 
 def main():
     args = parse_arguments()
@@ -84,17 +100,17 @@ def main():
         excel_reader.display_dataframe()
         df = excel_reader.dataframe
         normalizer = Normalizer(df)
-        # If the user provides METADATA
         if args.config:
             config = load_config(args.config)
             if config:
-                normalized_df = normalizer.normalize_dataframe(config)
+                normalized_df, primary_key = normalizer.normalize_dataframe(config)
+                validate_primary_key(normalized_df, primary_key)
+                save_to_database(normalized_df)
             else:
-                print("Invalid or missing config, switching to interactive mode.")
-                normalized_df = normalizer.normalize_dataframe()
+                raise ValueError("Error loading config.")
         else:
-            normalized_df = normalizer.normalize_dataframe()
-        save_to_database(normalized_df)
+            raise ValueError("Metadata configuration is required for uploading data.")
+
 
     normalized_csv_path = 'database/normalized.csv'
 

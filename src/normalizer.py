@@ -66,6 +66,7 @@ class Normalizer:
         :return:
         """
         fixed_schema_data_types = self.config['fixed_schema_data_types']
+        # print("debug----------------", fixed_schema_data_types)
         for column, expected_type in fixed_schema_data_types.items():
             if column in df.columns:
                 try:
@@ -73,7 +74,8 @@ class Normalizer:
                         df.loc[:, column] = pd.to_datetime(df[column], errors='coerce')
                     else:
                         df.loc[:, column] = df[column].astype(expected_type)
-                    logging.info(f"Column '{column}' successfully converted to {expected_type}.")
+                        print(f"Column '{column}' successfully converted to {expected_type}.")
+                        logging.info(f"Column '{column}' successfully converted to {expected_type}.")
                 except Exception as e:
                     logging.warning(f"Failed to align column '{column}' to {expected_type}: {e}")
 
@@ -142,14 +144,14 @@ class Normalizer:
         print("Added 'Earner_Type' column with NaN values.")
 
 
-        print("before debug----------------", primary_key)
+        # print("before debug----------------", primary_key)
         if not primary_key:
             # print("debug----------------")
             # print(self.df.columns)
             primary_key = [fixed_attr for fixed_attr in fixed_schema if fixed_attr in self.df.columns and fixed_attr != 'Primary_Key']
-            print("after debug----------------", primary_key)
+            # print("after debug----------------", primary_key)
             self.df['Primary_Key'] = self.df[primary_key].astype(str).agg(' '.join, axis=1).str.strip()
-            print(f"Created 'Primary_Key' from {primary_key}.")
+            # print(f"Created 'Primary_Key' from {primary_key}.")
         else:
             raise ValueError("No primary key found or mapped.")
 
@@ -159,45 +161,45 @@ class Normalizer:
 
     # delete this function temporarily
     # need to decouple normalizer class and re-add this function
-    def interactive_mapping(self):
-        """
-        Allow the user to map columns manually via CLI in the absence of a YAML config.
-        """
-        fixed_schema = self.config['fixed_schema']
-        print("\nNo configuration provided. Enter column mappings for your input data.\n")
-
-        mappings = {}
-        for fixed_attr in fixed_schema:
-            while True:
-                print(f"\nPlease select column(s) from your data for '{fixed_attr}' (you can select multiple columns by separating them with commas):")
-                for idx, column in enumerate(self.df.columns):
-                    print(f"{idx + 1}. {column}")
-                selected_columns = input(f"Enter the number(s) corresponding to the column(s) for '{fixed_attr}' (or press Enter to skip): ")
-                if selected_columns:
-                    try:
-                        column_indices = [int(i.strip()) - 1 for i in selected_columns.split(',') if i.strip().isdigit()]
-                        if all(0 <= idx < len(self.df.columns) for idx in column_indices):
-                            selected_columns_list = [self.df.columns[i] for i in column_indices]
-                            if len(selected_columns_list) > 1:
-                                self.df = self.merge_columns(selected_columns_list, fixed_attr)
-                                print(f"Merged {selected_columns_list} into '{fixed_attr}'.")
-                            elif len(selected_columns_list) == 1:
-                                mappings[selected_columns_list[0]] = fixed_attr
-                                print(f"Mapped '{selected_columns_list[0]}' to '{fixed_attr}'.")
-                            break
-                        else:
-                            print("Invalid input: Some selected columns are out of range. Please try again.")
-                    except ValueError:
-                        print("Invalid input: Please enter valid column numbers.")
-                else:
-                    print(f"Skipping mapping for '{fixed_attr}'.")
-                    self.df[fixed_attr] = pd.NA
-                    break
-
-        self.df.rename(columns=mappings, inplace=True)
-
-        filtered_df = self.df[fixed_schema]
-        return filtered_df
+    # def interactive_mapping(self):
+    #     """
+    #     Allow the user to map columns manually via CLI in the absence of a YAML config.
+    #     """
+    #     fixed_schema = self.config['fixed_schema']
+    #     print("\nNo configuration provided. Enter column mappings for your input data.\n")
+    #
+    #     mappings = {}
+    #     for fixed_attr in fixed_schema:
+    #         while True:
+    #             print(f"\nPlease select column(s) from your data for '{fixed_attr}' (you can select multiple columns by separating them with commas):")
+    #             for idx, column in enumerate(self.df.columns):
+    #                 print(f"{idx + 1}. {column}")
+    #             selected_columns = input(f"Enter the number(s) corresponding to the column(s) for '{fixed_attr}' (or press Enter to skip): ")
+    #             if selected_columns:
+    #                 try:
+    #                     column_indices = [int(i.strip()) - 1 for i in selected_columns.split(',') if i.strip().isdigit()]
+    #                     if all(0 <= idx < len(self.df.columns) for idx in column_indices):
+    #                         selected_columns_list = [self.df.columns[i] for i in column_indices]
+    #                         if len(selected_columns_list) > 1:
+    #                             self.df = self.merge_columns(selected_columns_list, fixed_attr)
+    #                             print(f"Merged {selected_columns_list} into '{fixed_attr}'.")
+    #                         elif len(selected_columns_list) == 1:
+    #                             mappings[selected_columns_list[0]] = fixed_attr
+    #                             print(f"Mapped '{selected_columns_list[0]}' to '{fixed_attr}'.")
+    #                         break
+    #                     else:
+    #                         print("Invalid input: Some selected columns are out of range. Please try again.")
+    #                 except ValueError:
+    #                     print("Invalid input: Please enter valid column numbers.")
+    #             else:
+    #                 print(f"Skipping mapping for '{fixed_attr}'.")
+    #                 self.df[fixed_attr] = pd.NA
+    #                 break
+    #
+    #     self.df.rename(columns=mappings, inplace=True)
+    #
+    #     filtered_df = self.df[fixed_schema]
+    #     return filtered_df
 
 
 

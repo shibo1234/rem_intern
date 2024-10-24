@@ -62,6 +62,7 @@ def load_config(config_path):
     except Exception as e:
         print(f"Error loading config: {e}")
         return None
+
 def validate_primary_key(df, primary_key):
     if not primary_key:
         raise ValueError("No valid Primary Key found or generated.")
@@ -89,11 +90,11 @@ def save_to_database(df, file_path='database/normalized.csv', sqlite_db_path='da
     combined_df.to_csv(file_path, mode='w', header=True, index=False)
     print(f"Data saved to {file_path}")
 
-    conn = sqlite3.connect(sqlite_db_path)
-    df.to_sql('normalized_data', conn, if_exists='replace', index=False)
-    print(f"Data saved to {sqlite_db_path} SQLite database")
-
-    conn.close()
+    # conn = sqlite3.connect(sqlite_db_path)
+    # df.to_sql('normalized_data', conn, if_exists='replace', index=False)
+    # print(f"Data saved to {sqlite_db_path} SQLite database")
+    #
+    # conn.close()
 
 def main():
     args = parse_arguments()

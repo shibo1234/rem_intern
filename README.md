@@ -87,6 +87,15 @@
 ![img.png](img.png)
 ![img_1.png](img_1.png)
 
+## Output CSV Screenshots
+| Primary\_Key | Earner\_Name | Earner\_ID | Agent\_Name | Agent\_ID | Commission\_Amount | Commission\_Period | Carrier\_Name | Enrollment\_Type | Plan\_Name | Member\_Name | Member\_ID | Effective\_Date | Cycle\_Year | Earner\_Type |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| Delta Care 65583769 Dylan Ward 73882424 116.67 NaT emblem Yes VIP Dual John Sanchez 95817026 2024-06-01 5 &lt;NA&gt; | Delta Care | 65583769.0 | Dylan Ward | 73882424.0 | 116.67 | null | emblem | Yes | VIP Dual | John Sanchez | 95817026 | 2024-06-01 00:00:00 | 5 | FMO |
+| Delta Care 65583769 Courtney Rivera 30672795 -87.5 2024-05-31 emblem Yes VIP Reserve \(DSNP\) Blake Sandoval 37760834 2023-05-01 3 &lt;NA&gt; | Delta Care | 65583769.0 | Courtney Rivera | 30672795.0 | -87.5 | 2024-05-31 00:00:00 | emblem | Yes | VIP Reserve \(DSNP\) | Blake Sandoval | 37760834 | 2023-05-01 00:00:00 | 3 | FMO |
+| Delta Care 65583769 James Scott 21323275 -87.5 2024-05-31 emblem Yes VIP Dual David Hammond 53903873 2024-01-01 4 &lt;NA&gt; | Delta Care | 65583769.0 | James Scott | 21323275.0 | -87.5 | 2024-05-31 00:00:00 | emblem | Yes | VIP Dual | David Hammond | 53903873 | 2024-01-01 00:00:00 | 4 | FMO |
+| Delta Care 65583769 Joseph Hanson 54019395 -87.5 2024-05-31 emblem Yes VIP Dual Sheri Williams 89262504 2024-01-01 7 &lt;NA&gt; | Delta Care | 65583769.0 | Joseph Hanson | 54019395.0 | -87.5 | 2024-05-31 00:00:00 | emblem | Yes | VIP Dual | Sheri Williams | 89262504 | 2024-01-01 00:00:00 | 7 | FMO |
+| Delta Care 65583769 Joseph Hanson 54019395 -87.5 2024-05-31 emblem Yes VIP Dual Jeremy Chan 71868289 2024-01-01 5 &lt;NA&gt; | Delta Care | 65583769.0 | Joseph Hanson | 54019395.0 | -87.5 | 2024-05-31 00:00:00 | emblem | Yes | VIP Dual | Jeremy Chan | 71868289 | 2024-01-01 00:00:00 | 5 | FMO |
+
 ## Assumptions on Business and Data Model
 - The system supports **FMOs** (Field Marketing Organizations) as intermediaries between insurance carriers and agents.
 - **Commission Data**: The core data processed includes commission payouts for agents and FMOs for specific health plan enrollments.

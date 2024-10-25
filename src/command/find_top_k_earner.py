@@ -52,8 +52,14 @@ class FindTopKEarnerByCommissionPeriod(Command):
         :param dataframe:
         :return:
         """
+        def remove_middle_name(name):
+            parts = name.strip().split()
+            parts = [part for part in parts if len(part) > 1]
+            return " ".join(parts)
+
         k = kwargs['k']
         period = kwargs['period']
+        dataframe['Earner_Name'] = dataframe['Earner_Name'].str.lower().str.strip().apply(remove_middle_name)
         dataframe['Commission_Period'] = pd.to_datetime(dataframe['Commission_Period'], errors='coerce')
         filtered_df = dataframe[dataframe['Commission_Period'].dt.strftime('%Y-%m') == period]
 

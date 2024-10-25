@@ -42,6 +42,7 @@ class FindTopKCarrier(Command):
         :return:
         """
         k = kwargs['k']
+        dataframe['Earner_Name'] = dataframe['Earner_Name'].str.lower().str.strip()
         top_carriers = dataframe.groupby('Carrier_Name').agg(
             {'Commission_Amount': 'sum'}
         ).sort_values('Commission_Amount', ascending=False).head(k)[['Commission_Amount']]

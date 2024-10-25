@@ -44,6 +44,7 @@ class SqlQuery(Command):
         :return:
         """
         query = kwargs['query']
+        dataframe['Earner_Name'] = dataframe['Earner_Name'].str.lower().str.strip()
         print(f"Executing query: {query}")
         print(psql.sqldf(query, {"df": dataframe}))
         return psql.sqldf(query, {"df": dataframe})

@@ -43,6 +43,7 @@ class FindTopKPlan(Command):
         :return:
         """
         k = kwargs['k']
+        dataframe['Earner_Name'] = dataframe['Earner_Name'].str.lower().str.strip()
         top_plans = dataframe.groupby('Plan_Name').agg(
             {'Commission_Amount': 'sum'}
         ).sort_values('Commission_Amount', ascending=False).head(k)[['Commission_Amount']]
